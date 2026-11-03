@@ -1,0 +1,14 @@
+openapi: 3.0.3
+info:
+  title: Components
+  version: 1.0.0
+  description: A components-only spec, like a shared "common types" file. It has no endpoints.
+paths: {}
+components:
+  schemas:
+    Name:
+      type: string
+      minLength: 1
+    Color:
+      type: string
+      enum: [red, green, blue]

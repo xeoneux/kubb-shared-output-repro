@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Shop
+  version: 1.0.0
+paths:
+  /products:
+    get:
+      operationId: listProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+components:
+  schemas:
+    # In all 3 specs, identical
+    Name:
+      type: string
+      minLength: 1
+    Color:
+      type: string
+      enum: [red, green, blue]
+    # In pets and shop only (2 of 3 specs), identical
+    Address:
+      type: object
+      required: [street, city]
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+    # Only in shop
+    Product:
+      type: object
+      required: [name, color]
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        color:
+          $ref: '#/components/schemas/Color'
+        warehouse:
+          $ref: '#/components/schemas/Address'

@@ -1,0 +1,35 @@
+{
+  "name": "kubb-shared-output-repro",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reproduction for kubb-labs/kubb#3660 and the output.shared proposal in kubb-labs/kubb#4352",
+  "type": "module",
+  "scripts": {
+    "generate": "kubb generate",
+    "generate:without-shared": "NO_SHARED=1 kubb generate",
+    "report": "node report.ts",
+    "typecheck": "tsc --noEmit",
+    "repro": "npm run generate && npm run report && npm run typecheck"
+  },
+  "devDependencies": {
+    "@kubb/plugin-ts": "5.0.10",
+    "@kubb/plugin-zod": "5.4.12",
+    "kubb": "https://pkg.pr.new/kubb-labs/kubb/kubb@2070b16",
+    "typescript": "^6.0.3",
+    "zod": "^4.0.0"
+  },
+  "overrides": {
+    "@kubb/adapter-oas": "https://pkg.pr.new/kubb-labs/kubb/@kubb/adapter-oas@2070b16",
+    "@kubb/ast": "https://pkg.pr.new/kubb-labs/kubb/@kubb/ast@2070b16",
+    "@kubb/cli": "https://pkg.pr.new/kubb-labs/kubb/@kubb/cli@2070b16",
+    "@kubb/core": "https://pkg.pr.new/kubb-labs/kubb/@kubb/core@2070b16",
+    "@kubb/kit": "https://pkg.pr.new/kubb-labs/kubb/@kubb/kit@2070b16",
+    "@kubb/parser-ts": "https://pkg.pr.new/kubb-labs/kubb/@kubb/parser-ts@2070b16",
+    "@kubb/plugin-barrel": "https://pkg.pr.new/kubb-labs/kubb/@kubb/plugin-barrel@2070b16",
+    "@kubb/renderer-jsx": "https://pkg.pr.new/kubb-labs/kubb/@kubb/renderer-jsx@2070b16",
+    "kubb": "$kubb"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
