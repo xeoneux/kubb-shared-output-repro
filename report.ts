@@ -1,29 +1,32 @@
-// Prints where each schema was written, so the gaps are easy to see.
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+// Prints where each schema was written, so the results are easy to see.
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 
-const types = (dir: string): string[] | null => (existsSync(dir) ? readdirSync(dir).filter((f) => f !== 'index.ts').map((f) => f.replace('.ts', '')) : null)
-const barrel = (dir: string): string[] | null => (existsSync(`${dir}/index.ts`) ? [...readFileSync(`${dir}/index.ts`, 'utf8').matchAll(/export type \{ (\w+)/g)].map((m) => m[1]) : null)
+const specs = ['components', 'pets', 'shop'];
 
-console.log('\nTypes written per folder:')
-for (const folder of ['shared', 'components', 'pets', 'shop']) {
-  const files = types(`gen/${folder}/types`)
-  console.log(`  gen/${folder}/types:`.padEnd(26), files ? files.join(', ') : '(missing)')
+const types = (dir: string): string[] =>
+  existsSync(dir) ? readdirSync(dir).filter((f) => f !== 'index.ts').map((f) => f.replace('.ts', '')) : [];
+
+const barrel = (dir: string): string[] =>
+  existsSync(`${dir}/index.ts`)
+    ? [...readFileSync(`${dir}/index.ts`, 'utf8').matchAll(/export type \{([^}]*)\}/g)].flatMap((m) =>
+        m[1].split(',').map((name) => name.trim()).filter(Boolean),
+      )
+    : [];
+
+console.log('\nTypes written per folder:');
+for (const folder of ['_shared', ...specs]) {
+  console.log(`  gen/${folder}/types:`.padEnd(26), types(`gen/${folder}/types`).join(', ') || '(none)');
 }
 
-console.log('\nExported from each barrel (gen/<spec>/types/index.ts):')
-for (const folder of ['components', 'pets', 'shop']) {
-  const names = barrel(`gen/${folder}/types`)
-  console.log(`  ${folder}:`.padEnd(14), names ? names.join(', ') : '(missing)')
-}
+const where = (name: string): string[] => ['_shared', ...specs].filter((folder) => types(`gen/${folder}/types`).includes(name));
+const check = (ok: boolean, text: string) => console.log(`  ${ok ? 'OK  ' : 'GAP '} ${text}`);
 
-const check = (ok: boolean, text: string) => console.log(`  ${ok ? 'OK  ' : 'GAP '} ${text}`)
-const pets = types('gen/pets/types') ?? []
-const shop = types('gen/shop/types') ?? []
-const sharedTypes = types('gen/shared/types') ?? []
-
-console.log('\nChecks:')
-check(sharedTypes.includes('Name') && sharedTypes.includes('Color'), 'Name and Color (in all 3 specs) are written once, to gen/shared')
-check(!(pets.includes('Address') && shop.includes('Address')), 'Address (in 2 of 3 specs) is written once')
-check((barrel('gen/pets/types') ?? []).includes('Name'), 'gen/pets/types still exports Name')
-check(existsSync('gen/components/types/index.ts'), 'gen/components/types still exists')
-console.log()
+console.log('\nChecks:');
+check(where('Name').join() === '_shared' && where('Color').join() === '_shared', 'Name and Color (in all 3 specs) are written once, to gen/_shared');
+check(where('Address').join() === '_shared', 'Address (in 2 of 3 specs) is written once, to gen/_shared');
+check(specs.every((spec) => barrel(`gen/${spec}/types`).includes('Name')), "every spec's barrel still exports Name");
+check(existsSync('gen/components/types/index.ts'), 'gen/components/types still exists, although all its schemas are shared');
+check(where('Tag').includes('_shared'), `Tag (same in 2 specs, different in 1) is shared by the 2 that agree. Written to: ${where('Tag').join(', ')}`);
+check(where('Badge').join() === '_shared', `Badge (identical in all 3 specs, uses Tag) is written once. Written to: ${where('Badge').join(', ')}`);
+console.log(`  NOTE Cat is the same in pets.yaml and shop.yaml, but the Animal discriminator in pets changes it. Written to: ${where('Cat').join(', ')}`);
+console.log();

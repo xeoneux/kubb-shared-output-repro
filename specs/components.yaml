@@ -12,3 +12,24 @@ components:
     Color:
       type: string
       enum: [red, green, blue]
+    Tag:
+      type: string
+      description: A tag.
+    # In all 3 specs, identical. It uses Tag, so it isn't shared either, and the warning doesn't name it.
+    Badge:
+      type: object
+      required: [tag]
+      properties:
+        tag:
+          $ref: '#/components/schemas/Tag'
+        name:
+          $ref: '#/components/schemas/Name'
+    Page:
+      type: object
+      required: [number, hasNext]
+      properties:
+        number:
+          type: integer
+          format: int32
+        hasNext:
+          type: boolean

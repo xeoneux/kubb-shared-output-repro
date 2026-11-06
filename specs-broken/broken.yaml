@@ -1,0 +1,13 @@
+openapi: 3.0.3
+info:
+  title: Broken
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    Broken:
+      type: object
+      properties:
+        # Points at a schema that doesn't exist. Kubb should report KUBB_REF_NOT_FOUND and fail.
+        owner:
+          $ref: '#/components/schemas/DoesNotExist'

@@ -3,3 +3,4 @@ gen
 package-lock.json
 .DS_Store
 COMMENT.md
+comments.md

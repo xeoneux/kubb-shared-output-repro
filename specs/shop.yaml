@@ -6,15 +6,49 @@ paths:
   /products:
     get:
       operationId: listProducts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/ProductPage'
+  /products/{productId}:
+    get:
+      operationId: getProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  # getHealth is in pets and shop, on a different path in each.
+  /products/health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
 components:
   schemas:
     # In all 3 specs, identical
@@ -24,6 +58,10 @@ components:
     Color:
       type: string
       enum: [red, green, blue]
+    # In all 3 specs, but only this one says "The tag."
+    Tag:
+      type: string
+      description: The tag.
     # In pets and shop only (2 of 3 specs), identical
     Address:
       type: object
@@ -33,14 +71,60 @@ components:
           type: string
         city:
           type: string
+    # In all 3 specs, identical. It uses Tag, so it isn't shared either, and the warning doesn't name it.
+    Badge:
+      type: object
+      required: [tag]
+      properties:
+        tag:
+          $ref: '#/components/schemas/Tag'
+        name:
+          $ref: '#/components/schemas/Name'
+    Page:
+      type: object
+      required: [number, hasNext]
+      properties:
+        number:
+          type: integer
+          format: int32
+        hasNext:
+          type: boolean
+    # Identical to pets.yaml, but not part of a discriminator here
+    Cat:
+      type: object
+      required: [kind]
+      properties:
+        kind:
+          type: string
+        indoor:
+          type: boolean
     # Only in shop
     Product:
       type: object
-      required: [name, color]
+      required: [id, name, color]
       properties:
+        id:
+          type: string
+          format: uuid
         name:
           $ref: '#/components/schemas/Name'
         color:
           $ref: '#/components/schemas/Color'
         warehouse:
           $ref: '#/components/schemas/Address'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        mascot:
+          $ref: '#/components/schemas/Cat'
+    ProductPage:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Product'
