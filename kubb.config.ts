@@ -57,9 +57,9 @@ const createSingleConfig = (inputPath: string, outputDir: string): UserConfig =>
   output: {
     clean: true,
     path: outputDir,
-    ...(shared ? { shared } : {}),
     defaultBanner: false,
   },
+  ...(shared ? { shared } : {}),
   // Drop `.ts` from import paths, as v4 did.
   parsers: [parserTs({ extension: { '.ts': '' } }), parserTsx({ extension: { '.ts': '' } })],
   adapter: adapterOas({

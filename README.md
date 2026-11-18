@@ -1,6 +1,6 @@
 # kubb `output.shared` reproduction
 
-A small example for [kubb-labs/kubb#3660](https://github.com/kubb-labs/kubb/issues/3660), testing `output.shared` from [kubb-labs/kubb#4352](https://github.com/kubb-labs/kubb/pull/4352) (preview build of commit `4a562fe`).
+A small example for [kubb-labs/kubb#3660](https://github.com/kubb-labs/kubb/issues/3660), testing `shared` from [kubb-labs/kubb#4352](https://github.com/kubb-labs/kubb/pull/4352) (preview build of commit `171a946`).
 
 `kubb.config.ts` uses the same options as our real setup: `adapterOas` with `validate`, `discriminator: 'propagate'` and `integerType: 'number'`, import paths without `.ts`, named barrels per plugin, and `plugin-ts`, `plugin-zod` (`inferred`), `plugin-axios` (Zod response validation, `returnType: 'full'`), `plugin-react-query` (hooks, infinite and suspense queries, our query and mutation keys), `plugin-msw` and `plugin-faker`. Every config runs all of them.
 
